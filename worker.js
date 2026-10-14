@@ -1122,7 +1122,7 @@ async function handleUserMessage(message, env) {
     const isBanned = await isUserBanned(userInfo.userId, env);
     if (isBanned) {
       // 可选：发送封禁通知，或者直接忽略
-      // await sendMessage(userInfo.chatId, '🚫 你已被禁止使用此机器人。', env.BOT_TOKEN);
+      await sendMessage(userInfo.chatId, '🚫 你已被禁止使用此机器人。', env.BOT_TOKEN);
       return;
     }
 
@@ -1152,7 +1152,7 @@ async function handleUserMessage(message, env) {
 
         await sendMessage(
           userInfo.chatId,
-          `👋 你好！欢迎使用消息转发机器人。\n\n🔐 为了防止垃圾信息，请先回答以下问题：\n\n❓ ${mathQ.question} = ?\n\n请选择正确答案：`,
+          `👋 欢迎使用消息转发机器人。\n\n🔐 为了防止垃圾信息，请先回答以下问题：\n\n❓ ${mathQ.question} = ?\n\n请选择正确答案：`,
           env.BOT_TOKEN,
           { reply_markup: keyboard }
         );
@@ -1233,7 +1233,7 @@ async function handleUserMessage(message, env) {
       console.log(`消息转发成功: 用户 ${userInfo.userName} -> 管理员${messageOptions.message_thread_id ? ' (话题 ' + messageOptions.message_thread_id + ')' : ''}`)
 
       // 给用户发送确认消息
-      await sendMessage(userInfo.chatId, `✅ 你的消息已发送给管理员，请耐心等待回复。`, env.BOT_TOKEN)
+      await sendMessage(userInfo.chatId, `✅ 已发送，请耐心等待回复。`, env.BOT_TOKEN)
     }
   } catch (error) {
     console.error('处理用户消息错误:', error)
@@ -1255,7 +1255,7 @@ async function handleAdminMessage(message, env) {
       const isForumChat = env.ENABLE_FORUM_MODE === 'true' ? await isForum(env.ADMIN_CHAT_ID, env.BOT_TOKEN) : false
 
       await sendMessage(env.ADMIN_CHAT_ID,
-        `🔧 *管理员面板*\n\n👋 欢迎使用消息转发机器人管理面板！\n\n📋 *可用命令:*\n• \`/status\` - 查看机器人状态\n• \`/help\` - 显示帮助信息\n• \`/post\` - 群发消息功能\n• \`/users\` - 查看用户列表（需启用用户跟踪）\n\n💡 *使用说明:*\n• 直接回复用户消息即可回复给对应用户\n• 使用 /post 命令进行消息群发\n• 论坛模式下，每个用户有独立话题\n\n📊 *系统状态:*\n• 用户跟踪: ${userTrackingStatus}\n• 论坛模式: ${forumModeStatus}${isForumChat ? ' ✅ 已检测到论坛群组' : ''}\n\n🤖 机器人已就绪，等待用户消息...`,
+        `🔧 *管理员面板*\n\n👋 欢迎使用管理面板！\n\n📋 *可用命令:*\n• \`/status\` - 查看机器人状态\n• \`/help\` - 显示帮助信息\n• \`/post\` - 群发消息功能\n• \`/users\` - 查看用户列表（需启用用户跟踪）\n\n💡 *使用说明:*\n• 直接回复用户消息即可回复给对应用户\n• 使用 /post 命令进行消息群发\n• 论坛模式下，每个用户有独立话题\n\n📊 *系统状态:*\n• 用户跟踪: ${userTrackingStatus}\n• 论坛模式: ${forumModeStatus}${isForumChat ? ' ✅ 已检测到论坛群组' : ''}\n\n🤖 机器人已就绪，等待用户消息...`,
         env.BOT_TOKEN,
         { message_thread_id: message.message_thread_id }
       )
@@ -1563,7 +1563,7 @@ async function handleAdminMessage(message, env) {
         if (message.text) {
           // 转义管理员消息中的特殊字符以避免 Markdown 解析错误
           const escapedText = escapeMarkdown(message.text);
-          replyResult = await sendMessage(userChatId, `💬 *管理员回复:*\n\n${escapedText}`, env.BOT_TOKEN)
+          replyResult = await sendMessage(userChatId, `💬:*\n\n${escapedText}`, env.BOT_TOKEN)
         } else {
           // 使用改进的媒体消息发送函数
           replyResult = await sendMediaReplyToUser(userChatId, env.ADMIN_CHAT_ID, message.message_id, message.caption, env.BOT_TOKEN)
@@ -1571,7 +1571,7 @@ async function handleAdminMessage(message, env) {
 
         if (replyResult.ok) {
           await sendMessage(env.ADMIN_CHAT_ID,
-            `✅ 消息已发送给用户 (ID: ${userChatId})`,
+            `✅ 已发送给 (ID: ${userChatId})`,
             env.BOT_TOKEN,
             {
               reply_to_message_id: message.message_id,

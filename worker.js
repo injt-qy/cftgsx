@@ -354,6 +354,38 @@ async function extractUserChatId(messageText, secret) {
   try {
     if (!messageText || typeof messageText !== 'string') return null;
 
+
+    // 兼容 Telegram 渲染后的用户标识
+    const renderedUsernameMatch = messageText.match(
+      /@[\w]+ \((\d+):([a-f0-9]{16})\)/
+    );
+    const renderedUserMatch = messageText.match(
+      /USER:(\d+):([a-f0-9]{16})/
+    );
+
+    const renderedMatch = renderedUsernameMatch || renderedUserMatch;
+
+    if (renderedMatch) {
+      const userId = renderedMatch[1];
+      const signature = renderedMatch[2];
+
+      const isValid = await verifyUserIdSignature(
+        userId,
+        signature,
+        secret
+      );
+
+      if (isValid) return userId;
+
+      logError(
+        'extractUserChatId',
+        new Error('Invalid rendered user tag signature'),
+        { userId }
+      );
+      return null;
+    }
+
+    
     // 新的username链接格式：[@username (userId:signature)](https://t.me/username)
     const usernameMatch = messageText.match(/\[@\w+ \((\d+):([a-f0-9]{16})\)\]\(https:\/\/t\.me\/\w+\)/);
     if (usernameMatch) {
